@@ -5,3 +5,8 @@ RewriteRule ^(.*)$ $1.gz [L]
 RewriteCond %{HTTP:Accept-Encoding} !gzip 
 RewriteCond %{REQUEST_FILENAME}.gz -f
 RewriteRule ^(.+)$ send-uncompressed.cgi?$1
+
+# The following is necessary once index.html is compressed, otherwise
+# the top page will give a "forbidden" error.
+
+DirectoryIndex index.html index.html.gz index.cgi
