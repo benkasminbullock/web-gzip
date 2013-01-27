@@ -3,6 +3,8 @@ use warnings;
 use strict;
 use IO::Uncompress::Gunzip qw/gunzip $GunzipError/;
 
+binmode STDOUT, ":crlf";
+
 my $query = $ENV{REDIRECT_QUERY_STRING};
 if (! defined $query) {
     $query = 'no query';
@@ -24,15 +26,11 @@ exit;
 sub send_file
 {
     my ($file) = @_;
+    gunzip $file, \my $file_contents;
     print <<EOF;
 Content-type: text/plain; charset=UTF-8
-X-Requester-Is-Wanker: yes
+X-Requester-No-Gzip: yes
 
+$file_contents
 EOF
-    gunzip $file, \*STDOUT;
-}
-
-
-for my $k (sort keys %ENV) {
-    print "$k $ENV{$k}\n";
 }
