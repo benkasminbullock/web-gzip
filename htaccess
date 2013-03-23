@@ -1,5 +1,6 @@
 RewriteCond %{HTTP:Accept-Encoding} gzip 
 RewriteCond %{REQUEST_FILENAME}.gz -f 
+RewriteCond %{PATH_INFO} ^$
 RewriteRule ^(.*)$ $1.gz [L] 
 
 RewriteCond %{HTTP:Accept-Encoding} !gzip 
