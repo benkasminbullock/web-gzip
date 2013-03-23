@@ -1,3 +1,11 @@
+# For a request like
+# http://www.example.org/xyz/index.html/garbage=here
+# REQUEST_FILENAME=c/ularm-setjmp/index.html
+# PATH_INFO=/garbage=here
+# So it's necessary to check that PATH_INFO is zero, with
+#
+# RewriteCond %{PATH_INFO} ^$
+
 RewriteCond %{HTTP:Accept-Encoding} gzip 
 RewriteCond %{REQUEST_FILENAME}.gz -f 
 RewriteCond %{PATH_INFO} ^$
