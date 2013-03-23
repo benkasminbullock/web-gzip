@@ -1,6 +1,6 @@
 # For a request like
 # http://www.example.org/xyz/index.html/garbage=here
-# REQUEST_FILENAME=c/ularm-setjmp/index.html
+# REQUEST_FILENAME=xyz/index.html
 # PATH_INFO=/garbage=here
 # So it's necessary to check that PATH_INFO is zero, with
 #
