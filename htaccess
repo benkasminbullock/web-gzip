@@ -19,8 +19,9 @@ RewriteRule ^(.+)$ send-uncompressed.cgi?$1
 
 RewriteCond %{HTTP:Accept-Encoding} !gzip
 RewriteCond %{REQUEST_URI} /$
+# Check there is not "index.cgi" in the directory..
+RewriteCond %{REQUEST_FILENAME}index.cgi !-f
 RewriteRule ^(.*)$ send-uncompressed.cgi?$1index.html
-
 
 # The following is necessary once index.html is compressed, otherwise
 # the top page will give a "forbidden" error.
