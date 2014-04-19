@@ -4,4 +4,4 @@ use strict;
 use FindBin;
 my $file = 'test';
 $ENV{REDIRECT_QUERY_STRING} = $file;
-system ("$FindBin::Bin/send-uncompressed.cgi");
+system ("perl $FindBin::Bin/send-uncompressed.cgi");
