@@ -1,0 +1,33 @@
+# This is a sample configuration for Apache. It's very similar to
+# ".htaccess", but we need to add two more things. One is
+# "RewriteBase", and the other is the succession of "ForceType"
+# directives for our various mime types.
+
+	<Directory /var/www/>
+
+		DirectoryIndex index.html index.html.gz
+		AddEncoding gzip .gz 
+		AddType text/html .html.gz
+		RewriteEngine on
+		RewriteBase /
+		RewriteCond %{HTTP:Accept-Encoding} gzip 
+		RewriteCond %{REQUEST_FILENAME}.gz -f 
+		RewriteRule ^(.*)$ $1.gz [L] 
+
+		RewriteCond %{HTTP:Accept-Encoding} !gzip 
+		RewriteCond %{REQUEST_FILENAME}.gz -f
+		RewriteRule ^(.+)$ send-uncompressed.cgi?$1
+
+		<FilesMatch \.html\.gz$>
+			ForceType text/html
+	        </FilesMatch>
+		<FilesMatch \.css\.gz$>
+  			ForceType text/css
+   	        </FilesMatch>
+		<FilesMatch \.js\.gz$>
+			ForceType application/javascript
+		</FilesMatch>
+		<FilesMatch \.txt\.gz$>
+			ForceType text/plain
+		</FilesMatch>
+	</Directory>
