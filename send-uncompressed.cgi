@@ -1,4 +1,4 @@
-#!/usr/local/bin/perl
+#!/home/ben/software/install/bin/perl
 use warnings;
 use strict;
 use HTTP::Date;
@@ -50,11 +50,10 @@ sub send_file
     my $if_modified_since = $ENV{HTTP_IF_MODIFIED_SINCE};
     if ($if_modified_since) {
 	my $if_modified_since_epoch = str2time ($if_modified_since);
-	if ($if_modified_since_epoch > $mtime) {
+	if ($if_modified_since_epoch >= $mtime) {
 	    # Print not modified header.
 	    print <<EOF;
 Status: 304
-
 EOF
 	    return;
 	}
