@@ -6,6 +6,8 @@
 #
 # RewriteCond %{PATH_INFO} ^$
 
+RewriteEngine On
+
 RewriteCond %{HTTP:Accept-Encoding} gzip 
 RewriteCond %{REQUEST_FILENAME}.gz -f 
 RewriteCond %{PATH_INFO} ^$
@@ -27,3 +29,11 @@ RewriteRule ^(.*)$ send-uncompressed.cgi?$1index.html
 # the top page will give a "forbidden" error.
 
 DirectoryIndex index.html index.html.gz index.cgi
+
+# Apache 2.4 specific - add a Vary: Accept-Encoding header.
+
+<IfModule mod_headers.c>
+  <FilesMatch ".(js|css|xml|gz|html)$">
+    Header append Vary: Accept-Encoding
+  </FilesMatch>
+</IfModule>
