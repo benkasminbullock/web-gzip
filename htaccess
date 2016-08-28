@@ -8,6 +8,9 @@
 
 RewriteEngine On
 
+# If the user can accept gzip encoding, look for a file with .gz
+# corresponding to the request, and send it to the user.
+
 RewriteCond %{HTTP:Accept-Encoding} gzip 
 RewriteCond %{REQUEST_FILENAME}.gz -f 
 RewriteCond %{PATH_INFO} ^$
