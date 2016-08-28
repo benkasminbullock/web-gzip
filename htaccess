@@ -13,11 +13,16 @@ RewriteCond %{REQUEST_FILENAME}.gz -f
 RewriteCond %{PATH_INFO} ^$
 RewriteRule ^(.*)$ $1.gz [L] 
 
+# If the user cannot accept gzip encoding, send an uncompressed
+# version of the content, using the send-uncompressed.cgi Perl script.
+
 RewriteCond %{HTTP:Accept-Encoding} !gzip 
 RewriteCond %{REQUEST_FILENAME}.gz -f
 RewriteRule ^(.+)$ send-uncompressed.cgi?$1
 
-# Redirect for the case of directory indices.
+# Redirect for the case of directory indices, for example
+# "http://www.lemoda.net/" or "http://www.lemoda.net/momoe/" or
+# something, where there is no specific file at the end of the URL.
 
 RewriteCond %{HTTP:Accept-Encoding} !gzip
 RewriteCond %{REQUEST_URI} /$
@@ -25,15 +30,27 @@ RewriteCond %{REQUEST_URI} /$
 RewriteCond %{REQUEST_FILENAME}index.cgi !-f
 RewriteRule ^(.*)$ send-uncompressed.cgi?$1index.html
 
-# The following is necessary once index.html is compressed, otherwise
-# the top page will give a "forbidden" error.
+# The following is necessary once index.html is compressed, and
+# index.html does not exist, otherwise the top page will give a
+# "forbidden" error.
 
 DirectoryIndex index.html index.html.gz index.cgi
 
-# Apache 2.4 specific - add a Vary: Accept-Encoding header.
+# Add a Vary: Accept-Encoding header. This prevents caches upstream
+# from the webserver from sending the gzipped content regardless of
+# the client's Accept-Encoding.
+
+# This syntax is specific to Apache 2.4. Other versions of Apache
+# require a different format.
 
 <IfModule mod_headers.c>
+  # Send Vary: Accept-Encoding for files whose names end with with
+  # ".js", ".css", ".xml", ".gz", or ".html".
   <FilesMatch ".(js|css|xml|gz|html)$">
     Header append Vary: Accept-Encoding
   </FilesMatch>
 </IfModule>
+
+# Local variables:
+# mode: conf
+# End:
