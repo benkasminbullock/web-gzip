@@ -1,48 +1,52 @@
 #!/usr/local/bin/perl
 use warnings;
 use strict;
+# Set to a true value to print messages as it operates.
 my $verbose = 1;
-#use FindBin::Bin;
 use File::Find;
-find (\&wanted, ("."));
-sub wanted
+
+# Find all the files under the current directory.
+
+find (\& compress, ("."));
+exit;
+
+# Compress files which match a particular pattern.
+
+sub compress
 {
-    # Files in c/forum are cgi scripts, not perl example programs.
-    if ($File::Find::name =~ m!/c/forum/.*\.pl$! ||
-	$File::Find::name =~ /compress-static\.pl/) {
-	if ($verbose) {
-	    print "$File::Find::name not ok.\n";
-	}
-	return;
-    }
-    if (/(.*\.(?:html|css|js|txt|pl|c|pod)$)/) {
-        my $gz = "$_.gz";
-        if (-f $gz) {
-            if (age ($_) <= age ($gz)) {
-                if ($verbose) {
-                    print "Don't need to compress $_\n";
-                }
-                goto delete_file;
-            }
-        }
-        if ($verbose) {
-            print "Compressing $_\n";
-        }
-        system ("gzip --best --force $_");
-      delete_file:
-	if ($verbose) {
-	    print "Deleting $_\n";
-	}
-	unlink $_ or warn "Could not remove $_: $!";
-    }
-    else {
+    # See if the file name ends in ".html", ".css", etc.
+    if (! /(.*\.(?:html|css|js|txt|pl|c|pod)$)/) {
         if ($verbose) {
             print "Rejecting $_\n";
         }
+	# We don't need to compress this file (for example image files).
+	return;
     }
+    my $gz = "$_.gz";
+    if (-f $gz) {
+	# A compressed version of this file exists.
+	if (mdate ($_) <= mdate ($gz)) {
+	    if ($verbose) {
+		print "$_ is older than $gz: don't need to compress it.\n";
+	    }
+	    goto delete_file;
+	}
+    }
+    if ($verbose) {
+	print "Compressing $_\n";
+    }
+    system ("gzip --best --force $_");
+    delete_file:
+    # Delete the uncompressed version of the file.
+    if ($verbose) {
+	print "Deleting $_\n";
+    }
+    unlink $_ or warn "Could not remove $_: $!";
 }
 
-sub age
+# Returns the last modification date of the file in epoch time.
+
+sub mdate
 {
     my ($file) = @_;
     my @stat = stat $file;

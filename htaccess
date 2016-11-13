@@ -13,13 +13,20 @@ RewriteEngine On
 
 RewriteCond %{HTTP:Accept-Encoding} gzip 
 RewriteCond %{REQUEST_FILENAME}.gz -f 
-RewriteCond %{PATH_INFO} ^$
+# Make sure that the request URI does not end in "/", otherwise the
+# above test is true, for some reason or another, even though a file
+# called ".gz" does not exist.
+RewriteCond %{REQUEST_URI} !/$
+# I don't use this any more.
+# RewriteCond %{PATH_INFO} ^$
 RewriteRule ^(.*)$ $1.gz [L] 
 
 # If the user cannot accept gzip encoding, send an uncompressed
-# version of the content, using the send-uncompressed.cgi Perl script.
+# version of the content, using the "send-uncompressed.cgi" Perl
+# script.
 
-RewriteCond %{HTTP:Accept-Encoding} !gzip 
+RewriteCond %{HTTP:Accept-Encoding} !gzip
+RewriteCond %{REQUEST_URI} !/$ 
 RewriteCond %{REQUEST_FILENAME}.gz -f
 RewriteRule ^(.+)$ send-uncompressed.cgi?$1
 
@@ -31,6 +38,9 @@ RewriteCond %{HTTP:Accept-Encoding} !gzip
 RewriteCond %{REQUEST_URI} /$
 # Check there is not "index.cgi" in the directory..
 RewriteCond %{REQUEST_FILENAME}index.cgi !-f
+# Check that "index.html.gz" actually exists, otherwise this creates a
+# vicious circle of rewrites.
+RewriteCond %{REQUEST_URI}/index\.html\.gz -f
 RewriteRule ^(.*)$ send-uncompressed.cgi?$1index.html
 
 # The following is necessary once index.html is compressed, and
