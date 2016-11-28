@@ -17,8 +17,11 @@ RewriteCond %{REQUEST_FILENAME}.gz -f
 # above test is true, for some reason or another, even though a file
 # called ".gz" does not exist.
 RewriteCond %{REQUEST_URI} !/$
-# I don't use this any more.
-# RewriteCond %{PATH_INFO} ^$
+# Make sure that there is no trailing junk at the end of the valid
+# file name by checking that PATH_INFO is empty.
+RewriteCond %{PATH_INFO} ^$
+# If we have passed all of the above checks, rewrite the entire
+# request to add .gz to its end.
 RewriteRule ^(.*)$ $1.gz [L] 
 
 # If the user cannot accept gzip encoding, send an uncompressed
