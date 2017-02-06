@@ -51,9 +51,12 @@ sub send_file
     if ($if_modified_since) {
 	my $if_modified_since_epoch = str2time ($if_modified_since);
 	if ($if_modified_since_epoch >= $mtime) {
-	    # Print not modified header.
+	    # Print not modified header. This must contain a blank
+	    # line after the header, regardless of not having any body
+	    # content.
 	    print <<EOF;
 Status: 304
+
 EOF
 	    return;
 	}
